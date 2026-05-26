@@ -48,7 +48,7 @@ const PLANS = [
       "100 posts / mois",
       "Hooks premium",
       "Optimisation virale",
-      "Calendrier de contenu (bientôt)",
+      "Calendrier de contenu",
     ],
     cta: "Passer au Pro",
     highlight: false,
