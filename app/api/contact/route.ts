@@ -14,11 +14,14 @@ export async function POST(request: Request) {
   }
 
   try {
+    const to = process.env.CONTACT_EMAIL
+    if (!to) throw new Error("CONTACT_EMAIL non défini")
+
     await resend.emails.send({
       from: "LinkedPost AI <noreply@linkedpost-ai.com>",
-      to: "contact@linkedpost-ai.com",
+      to,
       replyTo: email,
-      subject: `[Contact] ${subject} — ${name}`,
+      subject: `[LinkedPost AI] Contact - ${subject}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; color: #1e293b;">
           <h2 style="margin: 0 0 24px; font-size: 20px; font-weight: 800;">Nouveau message de contact</h2>
@@ -28,6 +31,7 @@ export async function POST(request: Request) {
             <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px;">Sujet</td><td style="padding: 8px 0; font-weight: 600;">${subject}</td></tr>
           </table>
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+            <p style="margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Message</p>
             <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.7; white-space: pre-wrap;">${message}</p>
           </div>
         </div>
