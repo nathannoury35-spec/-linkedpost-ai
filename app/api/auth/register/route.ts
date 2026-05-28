@@ -19,6 +19,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Le mot de passe doit contenir au moins 6 caractères." }, { status: 400 })
     }
 
+    console.log("[register] Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 40))
+    console.log("[register] Anon key présente:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
     const supabase = await createClient()
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),

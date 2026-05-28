@@ -35,7 +35,6 @@ const PLANS = [
       "Historique des posts",
       "Support email",
     ],
-    cta: "Démarrer l'essai",
     highlight: true,
     badge: "Plus populaire",
     priceId: STARTER_PRICE_ID,
@@ -55,11 +54,12 @@ const PLANS = [
       "Historique illimité",
       "Support prioritaire",
     ],
-    cta: "Passer au Pro",
     highlight: false,
     priceId: PRO_PRICE_ID,
   },
 ]
+
+const PLAN_RANK: Record<string, number> = { free: 0, starter: 1, pro: 2 }
 
 export default async function BillingPage() {
   const supabase = await createClient()
@@ -134,6 +134,11 @@ export default async function BillingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {PLANS.map((plan) => {
             const isCurrent = plan.id === role
+            const planLevel = PLAN_RANK[plan.id] ?? 0
+            const currentRank = PLAN_RANK[role] ?? 0
+            const ctaLabel = planLevel > currentRank
+              ? `Passer au ${plan.name}`
+              : "Rétrograder"
 
             return (
               <div
@@ -195,10 +200,10 @@ export default async function BillingPage() {
                   }`}>
                     Plan actuel
                   </div>
-                ) : plan.priceId ? (
+                ) : planLevel > currentRank && plan.priceId ? (
                   <PlanCheckoutButton
                     priceId={plan.priceId}
-                    label={plan.cta}
+                    label={ctaLabel}
                     className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
                       plan.highlight
                         ? "bg-white text-blue-600 hover:bg-blue-50"
@@ -206,8 +211,8 @@ export default async function BillingPage() {
                     }`}
                   />
                 ) : (
-                  <div className={`text-center py-2.5 rounded-xl text-sm font-semibold border text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-600`}>
-                    {plan.cta}
+                  <div className="text-center py-2.5 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-500">
+                    {ctaLabel}
                   </div>
                 )}
               </div>
