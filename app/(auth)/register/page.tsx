@@ -1,16 +1,49 @@
 "use client"
 
-import { useActionState } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { signUp } from "@/app/actions/auth"
-import SubmitButton from "@/components/auth/SubmitButton"
-
-const initialState = { error: null }
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
-  const [state, formAction] = useActionState(signUp, initialState)
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  if (state.success) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const form = e.currentTarget
+    const full_name = (form.elements.namedItem("full_name") as HTMLInputElement).value
+    const email     = (form.elements.namedItem("email")     as HTMLInputElement).value
+    const password  = (form.elements.namedItem("password")  as HTMLInputElement).value
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ full_name, email, password }),
+      })
+      const data = await res.json()
+
+      if (data.error) {
+        setError(data.error)
+      } else if (data.success) {
+        setSuccess(data.success)
+      } else if (data.redirect) {
+        router.push(data.redirect)
+        router.refresh()
+      }
+    } catch {
+      setError("Erreur réseau, réessayez.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (success) {
     return (
       <div className="text-center py-4">
         <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
@@ -19,7 +52,7 @@ export default function RegisterPage() {
           </svg>
         </div>
         <h2 className="text-xl font-bold text-slate-900 mb-2">Vérifiez votre email !</h2>
-        <p className="text-slate-500 text-sm leading-relaxed">{state.success}</p>
+        <p className="text-slate-500 text-sm leading-relaxed">{success}</p>
         <Link href="/login" className="mt-6 inline-block text-sm text-blue-600 hover:text-blue-700 font-semibold">
           ← Retour à la connexion
         </Link>
@@ -34,16 +67,16 @@ export default function RegisterPage() {
         <p className="text-slate-500 text-sm mt-1">Commencez à générer des posts LinkedIn en 30 secondes</p>
       </div>
 
-      {state.error && (
+      {error && (
         <div className="mb-5 flex items-center gap-2.5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
           </svg>
-          {state.error}
+          {error}
         </div>
       )}
 
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="full_name" className="block text-sm font-medium text-slate-700 mb-1.5">
             Nom complet
@@ -91,7 +124,23 @@ export default function RegisterPage() {
         </div>
 
         <div className="pt-1">
-          <SubmitButton label="Créer mon compte gratuit" loadingLabel="Création du compte…" />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                Création du compte…
+              </>
+            ) : (
+              "Créer mon compte gratuit"
+            )}
+          </button>
         </div>
       </form>
 
