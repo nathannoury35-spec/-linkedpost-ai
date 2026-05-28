@@ -32,9 +32,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold text-sm mb-4">Légal</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Confidentialité</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">CGU</Link></li>
-              <li><Link href="mailto:support@linkedpost-ai.com" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><Link href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</Link></li>
+              <li><Link href="/cgu" className="hover:text-white transition-colors">CGU</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
         </div>

@@ -97,9 +97,9 @@ export default function RegisterPage() {
 
       <p className="mt-5 text-center text-xs text-slate-400 leading-relaxed">
         En vous inscrivant, vous acceptez nos{" "}
-        <Link href="/terms" className="underline hover:text-slate-600">CGU</Link>{" "}
+        <Link href="/cgu" className="underline hover:text-slate-600">CGU</Link>{" "}
         et notre{" "}
-        <Link href="/privacy" className="underline hover:text-slate-600">politique de confidentialité</Link>.
+        <Link href="/confidentialite" className="underline hover:text-slate-600">politique de confidentialité</Link>.
       </p>
 
       <p className="mt-4 text-center text-sm text-slate-500">
