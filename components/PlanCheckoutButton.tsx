@@ -6,10 +6,12 @@ export function PlanCheckoutButton({
   priceId,
   label,
   className,
+  fallbackHref,
 }: {
   priceId: string
   label: string
   className: string
+  fallbackHref?: string
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +25,10 @@ export function PlanCheckoutButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId }),
       })
+      if (res.status === 401) {
+        window.location.href = fallbackHref ?? "/register"
+        return
+      }
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url

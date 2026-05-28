@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
+import { PlanCheckoutButton } from "@/components/PlanCheckoutButton"
 
 /* ─── Data ─────────────────────────────────────────────────────────────────── */
 
@@ -70,6 +71,7 @@ const plans = [
     ],
     cta: "Passer au Starter",
     href: "/register?plan=starter",
+    priceId: "price_1TbSADB0HBcqWRZLGfJEAz80",
     highlight: true,
     badge: "Plus populaire",
   },
@@ -89,6 +91,7 @@ const plans = [
     ],
     cta: "Passer au Pro",
     href: "/register?plan=pro",
+    priceId: "price_1TbSBOB0HBcqWRZLNw69S3MW",
     highlight: false,
   },
 ]
@@ -396,16 +399,29 @@ export default function HomePage() {
                     ))}
                   </ul>
 
-                  <Link
-                    href={plan.href}
-                    className={`block text-center py-3 rounded-full font-semibold text-sm transition-all ${
-                      plan.highlight
-                        ? "bg-white text-blue-600 hover:bg-blue-50"
-                        : "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
+                  {plan.priceId ? (
+                    <PlanCheckoutButton
+                      priceId={plan.priceId}
+                      label={plan.cta}
+                      fallbackHref={plan.href}
+                      className={`w-full py-3 rounded-full font-semibold text-sm transition-all ${
+                        plan.highlight
+                          ? "bg-white text-blue-600 hover:bg-blue-50"
+                          : "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90"
+                      }`}
+                    />
+                  ) : (
+                    <Link
+                      href={plan.href}
+                      className={`block text-center py-3 rounded-full font-semibold text-sm transition-all ${
+                        plan.highlight
+                          ? "bg-white text-blue-600 hover:bg-blue-50"
+                          : "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90"
+                      }`}
+                    >
+                      {plan.cta}
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
