@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { PlanCheckoutButton } from "@/components/PlanCheckoutButton"
+import DowngradeButton from "@/components/DowngradeButton"
 
 const STARTER_PRICE_ID = process.env.STRIPE_PRICE_ID_STARTER?.trim() ?? ""
 const PRO_PRICE_ID = process.env.STRIPE_PRICE_ID_PRO?.trim() ?? ""
@@ -211,9 +212,10 @@ export default async function BillingPage() {
                     }`}
                   />
                 ) : (
-                  <div className="text-center py-2.5 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-500">
-                    {ctaLabel}
-                  </div>
+                  <DowngradeButton
+                    currentPlanName={currentPlan.name}
+                    targetPlanName={plan.name}
+                  />
                 )}
               </div>
             )
