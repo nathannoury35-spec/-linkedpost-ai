@@ -13,33 +13,41 @@ export async function POST(request: Request) {
     return Response.json({ error: "Champs manquants" }, { status: 400 })
   }
 
-  try {
-    const to = process.env.CONTACT_EMAIL
-    if (!to) throw new Error("CONTACT_EMAIL non défini")
+  const to = process.env.CONTACT_EMAIL
+  console.log("[contact] RESEND_API_KEY présente :", !!process.env.RESEND_API_KEY)
+  console.log("[contact] Envoi vers :", to)
 
-    await resend.emails.send({
-      from: "LinkedPost AI <noreply@linkedpost-ai.com>",
-      to,
-      replyTo: email,
-      subject: `[LinkedPost AI] Contact - ${subject}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; color: #1e293b;">
-          <h2 style="margin: 0 0 24px; font-size: 20px; font-weight: 800;">Nouveau message de contact</h2>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-            <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px; width: 100px;">Nom</td><td style="padding: 8px 0; font-weight: 600;">${name}</td></tr>
-            <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px;">Email</td><td style="padding: 8px 0; font-weight: 600;">${email}</td></tr>
-            <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px;">Sujet</td><td style="padding: 8px 0; font-weight: 600;">${subject}</td></tr>
-          </table>
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
-            <p style="margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Message</p>
-            <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.7; white-space: pre-wrap;">${message}</p>
-          </div>
-        </div>
-      `,
-    })
-    return Response.json({ success: true })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Erreur Resend"
-    return Response.json({ error: msg }, { status: 500 })
+  if (!to) {
+    console.error("[contact] CONTACT_EMAIL non défini")
+    return Response.json({ error: "Configuration manquante (CONTACT_EMAIL)" }, { status: 500 })
   }
+
+  const { data, error } = await resend.emails.send({
+    from: "LinkedPost AI <onboarding@resend.dev>",
+    to,
+    replyTo: email,
+    subject: `[LinkedPost AI] Contact - ${subject}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; color: #1e293b;">
+        <h2 style="margin: 0 0 24px; font-size: 20px; font-weight: 800;">Nouveau message de contact</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+          <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px; width: 100px;">Nom</td><td style="padding: 8px 0; font-weight: 600;">${name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px;">Email</td><td style="padding: 8px 0; font-weight: 600;">${email}</td></tr>
+          <tr><td style="padding: 8px 0; color: #64748b; font-size: 13px;">Sujet</td><td style="padding: 8px 0; font-weight: 600;">${subject}</td></tr>
+        </table>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+          <p style="margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Message</p>
+          <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.7; white-space: pre-wrap;">${message}</p>
+        </div>
+      </div>
+    `,
+  })
+
+  if (error) {
+    console.error("[contact] Erreur Resend :", error)
+    return Response.json({ error: error.message }, { status: 500 })
+  }
+
+  console.log("[contact] Email envoyé, id :", data?.id)
+  return Response.json({ success: true })
 }
