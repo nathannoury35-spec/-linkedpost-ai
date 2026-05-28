@@ -15,11 +15,16 @@ export default function ForgotPasswordPage() {
     setLoading(true)
     setError(null)
     const supabase = createClient()
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin
     const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://lp-ai-prod.vercel.app/reset-password",
+      redirectTo: `${appUrl}/reset-password`,
     })
-    if (err) setError(err.message)
-    else setSent(true)
+    if (err) {
+      console.error("[forgot-password] Supabase error:", err)
+      setError("Impossible d'envoyer l'email. Vérifiez votre adresse ou réessayez.")
+    } else {
+      setSent(true)
+    }
     setLoading(false)
   }
 
