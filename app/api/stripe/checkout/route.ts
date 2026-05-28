@@ -1,6 +1,5 @@
 import { stripe } from "@/lib/stripe/client"
 import { createClient } from "@/lib/supabase/server"
-import { APP_URL } from "@/lib/constants"
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -22,14 +21,19 @@ export async function POST(request: Request) {
     return Response.json({ error: "priceId manquant" }, { status: 400 })
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!appUrl) {
+    return Response.json({ error: "NEXT_PUBLIC_APP_URL non défini" }, { status: 500 })
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
       customer_email: user.email,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${APP_URL}/dashboard?upgraded=true`,
-      cancel_url: `${APP_URL}/pricing`,
+      success_url: `${appUrl}/dashboard?success=true`,
+      cancel_url: `${appUrl}/pricing`,
       metadata: { userId: user.id, priceId },
     })
 
