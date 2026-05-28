@@ -68,7 +68,7 @@ const plans = [
       "Historique des posts",
       "Support email",
     ],
-    cta: "Démarrer l'essai",
+    cta: "Passer au Starter",
     href: "/register?plan=starter",
     highlight: true,
     badge: "Plus populaire",
