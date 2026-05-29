@@ -13,7 +13,7 @@ export default async function DashboardPage() {
 
   const stats = [
     { label: "Posts générés", value: "0", icon: "⚡", color: "from-blue-500 to-indigo-600" },
-    { label: "Crédits restants", value: "5", icon: "🎯", color: "from-violet-500 to-purple-600" },
+    { label: "Posts restants", value: "3", icon: "🎯", color: "from-violet-500 to-purple-600" },
     { label: "Plan actuel", value: "Gratuit", icon: "🚀", color: "from-slate-500 to-slate-700" },
   ]
 
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
     {
       href: "/billing",
       title: "Passer au Pro",
-      description: "50 posts / mois, IA premium, historique illimité pour 19€/mois.",
+      description: "100 posts / mois, tous les tons, calendrier de contenu pour 29€/mois.",
       icon: "🚀",
       cta: "Voir les offres",
       primary: false,
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
       <div className="bg-gradient-to-r from-blue-600 to-violet-700 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <p className="font-bold text-lg mb-1">Commencez dès maintenant</p>
-          <p className="text-blue-200 text-sm">Vous avez 5 crédits gratuits. Générez votre premier post LinkedIn en 30 secondes.</p>
+          <p className="text-blue-200 text-sm">Vous avez 3 posts gratuits. Générez votre premier post LinkedIn en 30 secondes.</p>
         </div>
         <Link
           href="/generate"
