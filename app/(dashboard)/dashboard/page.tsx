@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
+import { PLANS } from "@/lib/constants"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -11,10 +12,22 @@ export default async function DashboardPage() {
   const fullName = user.user_metadata?.full_name as string | undefined
   const firstName = fullName?.split(" ")[0] ?? "là"
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, generations_used, generations_limit")
+    .eq("id", user.id)
+    .single()
+
+  const role = (profile?.role ?? "free") as keyof typeof PLANS
+  const used = profile?.generations_used ?? 0
+  const limit = profile?.generations_limit ?? PLANS[role].credits
+  const remaining = Math.max(0, limit - used)
+  const planName = PLANS[role].name
+
   const stats = [
-    { label: "Posts générés", value: "0", icon: "⚡", color: "from-blue-500 to-indigo-600" },
-    { label: "Posts restants", value: "3", icon: "🎯", color: "from-violet-500 to-purple-600" },
-    { label: "Plan actuel", value: "Gratuit", icon: "🚀", color: "from-slate-500 to-slate-700" },
+    { label: "Posts générés", value: String(used), icon: "⚡", color: "from-blue-500 to-indigo-600" },
+    { label: "Posts restants", value: `${remaining}/${limit}`, icon: "🎯", color: "from-violet-500 to-purple-600" },
+    { label: "Plan actuel", value: planName, icon: "🚀", color: "from-slate-500 to-slate-700" },
   ]
 
   const quickActions = [
@@ -99,7 +112,7 @@ export default async function DashboardPage() {
       <div className="bg-gradient-to-r from-blue-600 to-violet-700 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <p className="font-bold text-lg mb-1">Commencez dès maintenant</p>
-          <p className="text-blue-200 text-sm">Vous avez 3 posts gratuits. Générez votre premier post LinkedIn en 30 secondes.</p>
+          <p className="text-blue-200 text-sm">Vous avez {remaining} post{remaining !== 1 ? "s" : ""} restant{remaining !== 1 ? "s" : ""}. Générez votre premier post LinkedIn en 30 secondes.</p>
         </div>
         <Link
           href="/generate"
